@@ -1,17 +1,42 @@
 import cv2
 import numpy as np
 
+
+def nothing(x):
+    pass
+
+
 img = cv2.imread('sign1.JPG')
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-l_b = np.array([100, 50, 50])
-u_b = np.array([130, 255, 255])
+cv2.namedWindow("Tracking", cv2.WINDOW_NORMAL)
+cv2.createTrackbar("LH", "Tracking", 0, 255, nothing)
+cv2.createTrackbar("LS", "Tracking", 0, 255, nothing)
+cv2.createTrackbar("LV", "Tracking", 0, 255, nothing)
+cv2.createTrackbar("UH", "Tracking", 255, 255, nothing)
+cv2.createTrackbar("US", "Tracking", 255, 255, nothing)
+cv2.createTrackbar("UV", "Tracking", 255, 255, nothing)
 
-mask = cv2.inRange(hsv, l_b, u_b)
+while True:
+    l_h = cv2.getTrackbarPos("LH", "Tracking")
+    l_s = cv2.getTrackbarPos("LS", "Tracking")
+    l_v = cv2.getTrackbarPos("LV", "Tracking")
 
-res = cv2.bitwise_and(img, img, mask=mask)
-cv2.imshow("image", img)
+    u_h = cv2.getTrackbarPos("UH", "Tracking")
+    u_s = cv2.getTrackbarPos("US", "Tracking")
+    u_v = cv2.getTrackbarPos("UV", "Tracking")
 
-cv2.imshow("res", res)
-cv2.waitKey(0)
+    l_b = np.array([l_h, l_s, l_v])
+    u_b = np.array([u_h, u_s, u_v])
+
+    mask = cv2.inRange(hsv, l_b, u_b)
+
+    res = cv2.bitwise_and(img, img, mask=mask)
+    cv2.imshow("image", img)
+
+    cv2.imshow("res", res)
+
+    key = cv2.waitKey(1)
+    if key == 27:
+        break
 cv2.destroyAllWindows()
